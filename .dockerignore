@@ -1,0 +1,16 @@
+.git
+.vscode
+.idea
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+.venv/
+node_modules/
+.DS_Store
+Thumbs.db
+output/
+examples/

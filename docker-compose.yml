@@ -1,0 +1,23 @@
+# Travel Optimization Engine - Docker Compose
+# Usage:
+#   docker compose up                          # Show CLI help
+#   docker compose run travel-engine python scripts/kiwi_tequila.py --from HAN --to SFO --depart 2026-06-15
+#   docker compose run travel-engine python scripts/kiwi_client.py
+#   docker compose run travel-engine python scripts/amadeus_client.py
+
+services:
+  travel-engine:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: travel-optimization-engine
+    environment:
+      - KIWI_API_KEY=${KIWI_API_KEY:-}
+      - AMADEUS_API_KEY=${AMADEUS_API_KEY:-}
+      - AMADEUS_API_SECRET=${AMADEUS_API_SECRET:-}
+      - AMADEUS_ENV=${AMADEUS_ENV:-test}
+    volumes:
+      # Mount output directory for saving search results
+      - ./output:/app/output
+    # Override default command for interactive use:
+    # docker compose run travel-engine python scripts/kiwi_tequila.py --from HAN --to SFO --depart 2026-06-16 --output /app/output/results.json

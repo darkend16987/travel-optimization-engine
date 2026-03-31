@@ -1,6 +1,8 @@
 """
-Kiwi Tequila API Client
-Shared script for flight search with virtual interlining support.
+Kiwi Tequila API Client — Standalone CLI tool for flight search.
+
+NOTE: This is a standalone CLI script. For library usage, prefer kiwi_client.py
+which uses shared config, retry logic, and safe imports.
 
 Usage:
     python kiwi_tequila.py --from HAN --to SFO --depart 2026-06-16 --return 2026-06-25 --adults 2
@@ -85,7 +87,6 @@ def search_flights(fly_from, fly_to, date_from, date_to,
     
     headers = {
         "apikey": api_key,
-        "Content-Type": "application/json",
     }
     
     try:
@@ -278,9 +279,15 @@ def main():
         print(f"#{i:2d}  ${opt['price']:>7,.0f}  {route_str:<30s}  {airlines:<12s}  {opt['duration_hours']:.1f}h  {tags}")
     
     if args.output:
-        with open(args.output, "w", encoding="utf-8") as f:
+        # Validate output path to prevent directory traversal
+        output_path = os.path.realpath(args.output)
+        if ".." in os.path.relpath(output_path):
+            print(f"Error: Output path '{args.output}' is not allowed (directory traversal detected).")
+            sys.exit(1)
+        os.makedirs(os.path.dirname(output_path) or ".", exist_ok=True)
+        with open(output_path, "w", encoding="utf-8") as f:
             json.dump(results, f, indent=2, ensure_ascii=False)
-        print(f"\nResults saved to: {args.output}")
+        print(f"\nResults saved to: {output_path}")
 
 if __name__ == "__main__":
     main()

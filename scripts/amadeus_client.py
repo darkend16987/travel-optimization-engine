@@ -3,43 +3,60 @@
 
 import time
 import json
+import threading
 import requests
+import importlib.util
 from pathlib import Path
 
-# Import config from same directory
-import sys
-sys.path.insert(0, str(Path(__file__).parent))
-from config import AMADEUS_API_KEY, AMADEUS_API_SECRET, AMADEUS_BASE_URL, DEFAULTS
+# --- Safe import: load config from the same directory using importlib ---
+# This avoids sys.path manipulation which could allow config hijacking.
+_config_path = Path(__file__).parent / "config.py"
+_spec = importlib.util.spec_from_file_location("_travel_config", _config_path)
+_config = importlib.util.module_from_spec(_spec)
+_spec.loader.exec_module(_config)
 
-# --- Token Cache ---
+get_amadeus_key = _config.get_amadeus_key
+get_amadeus_secret = _config.get_amadeus_secret
+get_amadeus_base_url = _config.get_amadeus_base_url
+DEFAULTS = _config.DEFAULTS
+APIRequestError = _config.APIRequestError
+_parse_retry_after = _config._parse_retry_after
+
+
+# --- Thread-safe Token Cache ---
+_token_lock = threading.Lock()
 _token_cache = {"access_token": None, "expires_at": 0}
 
 
 def get_token():
-    """Get OAuth2 access token, refreshing if expired."""
-    if _token_cache["access_token"] and time.time() < _token_cache["expires_at"] - 60:
-        return _token_cache["access_token"]
+    """Get OAuth2 access token, refreshing if expired. Thread-safe."""
+    with _token_lock:
+        if _token_cache["access_token"] and time.time() < _token_cache["expires_at"] - 60:
+            return _token_cache["access_token"]
 
-    resp = requests.post(
-        f"{AMADEUS_BASE_URL}/v1/security/oauth2/token",
-        data={
-            "grant_type": "client_credentials",
-            "client_id": AMADEUS_API_KEY,
-            "client_secret": AMADEUS_API_SECRET,
-        },
-        timeout=DEFAULTS["request_timeout"],
-    )
-    resp.raise_for_status()
-    data = resp.json()
-    _token_cache["access_token"] = data["access_token"]
-    _token_cache["expires_at"] = time.time() + data.get("expires_in", 1799)
-    return _token_cache["access_token"]
+        base_url = get_amadeus_base_url()
+        resp = requests.post(
+            f"{base_url}/v1/security/oauth2/token",
+            data={
+                "grant_type": "client_credentials",
+                "client_id": get_amadeus_key(),
+                "client_secret": get_amadeus_secret(),
+            },
+            timeout=DEFAULTS["request_timeout"],
+        )
+        resp.raise_for_status()
+        data = resp.json()
+        _token_cache["access_token"] = data["access_token"]
+        _token_cache["expires_at"] = time.time() + data.get("expires_in", 1799)
+        return _token_cache["access_token"]
 
 
 def _request(method, endpoint, params=None, json_body=None, retries=None):
     """Make authenticated request with retry on 401/429."""
     if retries is None:
         retries = DEFAULTS["max_retries"]
+
+    base_url = get_amadeus_base_url()
 
     for attempt in range(retries + 1):
         token = get_token()
@@ -48,7 +65,7 @@ def _request(method, endpoint, params=None, json_body=None, retries=None):
         try:
             resp = requests.request(
                 method,
-                f"{AMADEUS_BASE_URL}{endpoint}",
+                f"{base_url}{endpoint}",
                 headers=headers,
                 params=params,
                 json=json_body,
@@ -56,23 +73,27 @@ def _request(method, endpoint, params=None, json_body=None, retries=None):
             )
         except requests.Timeout:
             if attempt < retries:
-                time.sleep(2 ** attempt)
+                time.sleep(min(2 ** attempt, DEFAULTS["max_retry_after"]))
                 continue
             raise
 
         if resp.status_code == 401:
-            _token_cache["access_token"] = None  # Force refresh
+            with _token_lock:
+                _token_cache["access_token"] = None  # Force refresh
             continue
 
         if resp.status_code == 429:
-            retry_after = int(resp.headers.get("Retry-After", 2 ** attempt))
+            retry_after = _parse_retry_after(
+                resp.headers.get("Retry-After"),
+                default=2 ** attempt,
+            )
             time.sleep(retry_after)
             continue
 
         resp.raise_for_status()
         return resp.json()
 
-    raise Exception(f"Amadeus API failed after {retries + 1} attempts")
+    raise APIRequestError(f"Amadeus API failed after {retries + 1} attempts")
 
 
 def search_flights(origin, destination, departure_date, adults=None, return_date=None,
@@ -159,4 +180,4 @@ if __name__ == "__main__":
     from config import validate_keys
     validate_keys("amadeus")
     print("Token:", get_token()[:20] + "...")
-    print("Amadeus client ready. Base URL:", AMADEUS_BASE_URL)
+    print("Amadeus client ready. Base URL:", get_amadeus_base_url())

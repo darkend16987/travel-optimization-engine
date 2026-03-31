@@ -3,11 +3,20 @@
 
 import time
 import requests
+import importlib.util
 from pathlib import Path
 
-import sys
-sys.path.insert(0, str(Path(__file__).parent))
-from config import KIWI_API_KEY, KIWI_BASE_URL, DEFAULTS
+# --- Safe import: load config from the same directory using importlib ---
+_config_path = Path(__file__).parent / "config.py"
+_spec = importlib.util.spec_from_file_location("_travel_config_kiwi", _config_path)
+_config = importlib.util.module_from_spec(_spec)
+_spec.loader.exec_module(_config)
+
+get_kiwi_key = _config.get_kiwi_key
+KIWI_BASE_URL = _config.KIWI_BASE_URL
+DEFAULTS = _config.DEFAULTS
+APIRequestError = _config.APIRequestError
+_parse_retry_after = _config._parse_retry_after
 
 
 def _request(endpoint, params=None, retries=None):
@@ -15,7 +24,7 @@ def _request(endpoint, params=None, retries=None):
     if retries is None:
         retries = DEFAULTS["max_retries"]
 
-    headers = {"apikey": KIWI_API_KEY}
+    headers = {"apikey": get_kiwi_key()}
 
     for attempt in range(retries + 1):
         try:
@@ -27,19 +36,22 @@ def _request(endpoint, params=None, retries=None):
             )
         except requests.Timeout:
             if attempt < retries:
-                time.sleep(2 ** attempt)
+                time.sleep(min(2 ** attempt, DEFAULTS["max_retry_after"]))
                 continue
             raise
 
         if resp.status_code == 429:
-            retry_after = int(resp.headers.get("Retry-After", 2 ** attempt))
+            retry_after = _parse_retry_after(
+                resp.headers.get("Retry-After"),
+                default=2 ** attempt,
+            )
             time.sleep(retry_after)
             continue
 
         resp.raise_for_status()
         return resp.json()
 
-    raise Exception(f"Kiwi API failed after {retries + 1} attempts")
+    raise APIRequestError(f"Kiwi API failed after {retries + 1} attempts")
 
 
 def search_flights(fly_from, fly_to, date_from, date_to, return_from=None,
