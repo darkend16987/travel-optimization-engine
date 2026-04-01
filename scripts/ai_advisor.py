@@ -40,19 +40,23 @@ def generate_advisory(flight_data: dict, skill_name: str) -> str:
 
     # Create the final prompt
     prompt = f"""
-You are the AI Travel Optimization Engine Advisor.
-Below are your core instructions (Skill Logic):
+Bạn là Chuyên gia Cố vấn Tối ưu hóa Hành trình bay (AI Travel Optimization Engine Advisor).
+Dưới đây là kỹ năng cốt lõi bạn cần áp dụng (Skill Logic):
 ---
 {skill_prompt}
 ---
 
-Here is the selected flight data from the user:
+Dữ liệu chuyến bay mà người dùng vừa chọn:
 ```json
 {json.dumps(flight_data, indent=2)}
 ```
 
-Based ONLY on your skill logic and the given flight data, please generate a concise, markdown-formatted advisory report. Address the user directly. 
-Make sure your answer is clean, professional, and directly analyzes this specific flight segment. Use bullet points and bold text for readability.
+YÊU CẦU BẮT BUỘC:
+1. TRẢ LỜI 100% BẰNG TIẾNG VIỆT rành mạch, chuyên nghiệp.
+2. Không chỉ thống kê lại dữ liệu, mà phải TÍNH TOÁN và PHÂN TÍCH rủi ro tài chính (phí ẩn, hành lý, chọn ghế, hoàn hủy).
+3. Đưa ra một MỨC GIÁ THỰC TẾ (True Cost) sau khi cộng các phí ẩn cơ bản.
+4. Chốt lại bằng một Lời Khuyên rành mạch (VERDICT): "Có nên mua vé này không? Chuyến bay này có phải là một món hời (Optimum) hay là một cái bẫy phí ẩn?"
+5. Format bằng thư viện Markdown (dùng bảng biểu, in đậm, bullet points cho dễ đọc).
 """
 
     try:

@@ -118,10 +118,10 @@ export default function Home() {
           {/* Search Box */}
           <form 
             onSubmit={handleSearch}
-            className="bg-white p-6 rounded-2xl shadow-xl flex flex-col md:flex-row items-center gap-4 text-left border border-gray-100 flex-wrap"
+            className="bg-white p-6 rounded-2xl shadow-xl grid grid-cols-1 md:grid-cols-12 gap-4 text-left border border-gray-100 items-end"
           >
             {/* Origin Autocomplete */}
-            <div className="flex-1 min-w-[200px] relative">
+            <div className="md:col-span-3 relative">
               <label className="text-xs text-gray-500 font-semibold mb-1 block uppercase tracking-wider">From (City/Airport)</label>
               <input 
                 type="text" 
@@ -157,7 +157,7 @@ export default function Home() {
             </div>
 
             {/* Destination Autocomplete */}
-            <div className="flex-1 min-w-[200px] relative">
+            <div className="md:col-span-3 relative">
               <label className="text-xs text-gray-500 font-semibold mb-1 block uppercase tracking-wider">To (City/Airport)</label>
               <input 
                 type="text" 
@@ -192,7 +192,7 @@ export default function Home() {
               )}
             </div>
 
-            <div className="flex-1 min-w-[150px]">
+            <div className="md:col-span-2">
               <label className="text-xs text-gray-500 font-semibold mb-1 block uppercase tracking-wider">Depart</label>
               <input 
                 type="date"
@@ -203,7 +203,7 @@ export default function Home() {
               />
             </div>
             
-            <div className="w-full md:w-24 min-w-[80px]">
+            <div className="md:col-span-1">
               <label className="text-xs text-gray-500 font-semibold mb-1 block uppercase tracking-wider">Pax</label>
               <input 
                 type="number"
@@ -215,7 +215,7 @@ export default function Home() {
               />
             </div>
 
-            <div className="w-full md:w-auto min-w-[120px]">
+            <div className="md:col-span-2">
               <label className="text-xs text-gray-500 font-semibold mb-1 block uppercase tracking-wider">Stops</label>
               <select 
                 value={maxStops}
@@ -227,7 +227,7 @@ export default function Home() {
               </select>
             </div>
 
-            <div className="w-full md:w-auto mt-5 md:mt-0 max-w-[200px] flex-1">
+            <div className="md:col-span-1 mt-5 md:mt-0">
               <button 
                 type="submit" 
                 disabled={loading}
@@ -340,7 +340,7 @@ export default function Home() {
         {/* Selected Flight Modal / AI Insights */}
         {selectedFlight && (
           <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-            <div className="bg-white rounded-2xl w-full max-w-3xl max-h-[90vh] overflow-y-auto shadow-2xl">
+            <div className="bg-white rounded-2xl w-full max-w-5xl max-h-[92vh] overflow-y-auto shadow-2xl">
               
               {/* Modal Header */}
               <div className="flex justify-between items-center p-6 border-b border-gray-100 bg-gray-50 rounded-t-2xl">
@@ -400,7 +400,7 @@ export default function Home() {
                       <p className="text-gray-600 font-medium animate-pulse">Gemini 2.5 Flash is analyzing fees and route options...</p>
                     </div>
                   ) : aiAdvisory ? (
-                    <div className="prose prose-indigo max-w-none bg-blue-50/50 p-6 rounded-xl border border-blue-100">
+                    <div className="prose prose-lg prose-indigo max-w-none bg-blue-50/50 p-6 rounded-xl border border-blue-100 leading-relaxed text-gray-800">
                       <ReactMarkdown>{aiAdvisory}</ReactMarkdown>
                     </div>
                   ) : (
