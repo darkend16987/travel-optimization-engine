@@ -118,10 +118,10 @@ export default function Home() {
           {/* Search Box */}
           <form 
             onSubmit={handleSearch}
-            className="bg-white p-6 rounded-2xl shadow-xl grid grid-cols-1 md:grid-cols-12 gap-4 text-left border border-gray-100 items-end"
+            className="bg-white p-6 rounded-2xl shadow-xl flex flex-col md:flex-row gap-4 text-left border border-gray-100 items-end"
           >
             {/* Origin Autocomplete */}
-            <div className="md:col-span-3 relative">
+            <div className="flex-1 w-full relative">
               <label className="text-xs text-gray-500 font-semibold mb-1 block uppercase tracking-wider">From (City/Airport)</label>
               <input 
                 type="text" 
@@ -157,7 +157,7 @@ export default function Home() {
             </div>
 
             {/* Destination Autocomplete */}
-            <div className="md:col-span-3 relative">
+            <div className="flex-1 w-full relative">
               <label className="text-xs text-gray-500 font-semibold mb-1 block uppercase tracking-wider">To (City/Airport)</label>
               <input 
                 type="text" 
@@ -192,7 +192,7 @@ export default function Home() {
               )}
             </div>
 
-            <div className="md:col-span-2">
+            <div className="w-full md:w-40 flex-none">
               <label className="text-xs text-gray-500 font-semibold mb-1 block uppercase tracking-wider">Depart</label>
               <input 
                 type="date"
@@ -203,7 +203,7 @@ export default function Home() {
               />
             </div>
             
-            <div className="md:col-span-1">
+            <div className="w-full md:w-20 flex-none">
               <label className="text-xs text-gray-500 font-semibold mb-1 block uppercase tracking-wider">Pax</label>
               <input 
                 type="number"
@@ -211,11 +211,11 @@ export default function Home() {
                 required
                 value={adults}
                 onChange={e => setAdults(Number(e.target.value))}
-                className="w-full bg-gray-50 border border-gray-200 text-gray-900 rounded-lg px-4 py-3 focus:ring-2 focus:ring-[#D4AF37] focus:outline-none transition-all"
+                className="w-full bg-gray-50 border border-gray-200 text-gray-900 rounded-lg px-4 py-3 focus:ring-2 focus:ring-[#D4AF37] focus:outline-none transition-all text-center"
               />
             </div>
 
-            <div className="md:col-span-2">
+            <div className="w-full md:w-36 flex-none">
               <label className="text-xs text-gray-500 font-semibold mb-1 block uppercase tracking-wider">Stops</label>
               <select 
                 value={maxStops}
@@ -227,7 +227,7 @@ export default function Home() {
               </select>
             </div>
 
-            <div className="md:col-span-1 mt-5 md:mt-0">
+            <div className="w-full md:w-auto flex-none mt-5 md:mt-0">
               <button 
                 type="submit" 
                 disabled={loading}
