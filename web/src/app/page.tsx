@@ -397,7 +397,7 @@ export default function Home() {
                   {analyzing ? (
                     <div className="bg-gradient-to-r from-gray-50 to-gray-100 p-8 rounded-xl flex flex-col items-center justify-center border border-gray-200">
                       <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-indigo-600 mb-4"></div>
-                      <p className="text-gray-600 font-medium animate-pulse">Gemini 3.1 Flash is analyzing fees and route options...</p>
+                      <p className="text-gray-600 font-medium animate-pulse">Gemini 2.5 Flash is analyzing fees and route options...</p>
                     </div>
                   ) : aiAdvisory ? (
                     <div className="prose prose-indigo max-w-none bg-blue-50/50 p-6 rounded-xl border border-blue-100">

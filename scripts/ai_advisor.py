@@ -24,8 +24,8 @@ def generate_advisory(flight_data: dict, skill_name: str) -> str:
 
     genai.configure(api_key=api_key)
     
-    # Using the latest Gemini 3.1 Flash as requested
-    model_name = 'gemini-3.1-flash'
+    # Using Gemini 2.5 Flash as fallback for availability
+    model_name = 'gemini-2.5-flash'
     model = genai.GenerativeModel(model_name)
 
     # Load context files
