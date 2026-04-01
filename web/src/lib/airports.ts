@@ -1,0 +1,22 @@
+export const popularAirports = [
+  { code: "HAN", name: "Hà Nội", full: "Noi Bai International Airport (HAN)" },
+  { code: "SGN", name: "Hồ Chí Minh", full: "Tan Son Nhat International Airport (SGN)" },
+  { code: "DAD", name: "Đà Nẵng", full: "Da Nang International Airport (DAD)" },
+  { code: "PQC", name: "Phú Quốc", full: "Phu Quoc International Airport (PQC)" },
+  { code: "CXR", name: "Nha Trang", full: "Cam Ranh International Airport (CXR)" },
+  { code: "HPH", name: "Hải Phòng", full: "Cat Bi International Airport (HPH)" },
+  { code: "VII", name: "Vinh", full: "Vinh International Airport (VII)" },
+  { code: "HUI", name: "Huế", full: "Phu Bai International Airport (HUI)" },
+  { code: "VCA", name: "Cần Thơ", full: "Can Tho International Airport (VCA)" },
+  { code: "DLI", name: "Đà Lạt", full: "Lien Khuong Airport (DLI)" },
+  { code: "BKK", name: "Bangkok", full: "Suvarnabhumi Airport (BKK)" },
+  { code: "SIN", name: "Singapore", full: "Changi Airport (SIN)" },
+  { code: "NRT", name: "Tokyo Narita", full: "Narita International Airport (NRT)" },
+  { code: "HND", name: "Tokyo Haneda", full: "Haneda Airport (HND)" },
+  { code: "ICN", name: "Seoul", full: "Incheon International Airport (ICN)" },
+  { code: "TPE", name: "Taipei", full: "Taoyuan International Airport (TPE)" },
+  { code: "SFO", name: "San Francisco", full: "San Francisco International (SFO)" },
+  { code: "JFK", name: "New York", full: "John F. Kennedy International (JFK)" },
+  { code: "CDG", name: "Paris", full: "Charles de Gaulle Airport (CDG)" },
+  { code: "LHR", name: "London", full: "Heathrow Airport (LHR)" }
+];

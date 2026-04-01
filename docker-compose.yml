@@ -4,20 +4,37 @@
 #   docker compose run travel-engine python scripts/kiwi_tequila.py --from HAN --to SFO --depart 2026-06-15
 #   docker compose run travel-engine python scripts/kiwi_client.py
 #   docker compose run travel-engine python scripts/amadeus_client.py
+#   docker compose run travel-engine python scripts/serpapi_client.py --from HAN --to SFO --depart 2026-06-15
+#   docker compose run travel-engine python scripts/hybrid_search.py --from HAN --to SFO --depart 2026-06-15
 
 services:
-  travel-engine:
+  backend:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: travel-optimization-engine
+    container_name: travel-optimization-backend
     environment:
       - KIWI_API_KEY=${KIWI_API_KEY:-}
       - AMADEUS_API_KEY=${AMADEUS_API_KEY:-}
       - AMADEUS_API_SECRET=${AMADEUS_API_SECRET:-}
       - AMADEUS_ENV=${AMADEUS_ENV:-test}
+      - SERPAPI_KEY=${SERPAPI_KEY:-}
+      - GEMINI_API_KEY=${GEMINI_API_KEY:-}
     volumes:
-      # Mount output directory for saving search results
       - ./output:/app/output
-    # Override default command for interactive use:
-    # docker compose run travel-engine python scripts/kiwi_tequila.py --from HAN --to SFO --depart 2026-06-16 --output /app/output/results.json
+    ports:
+      - "8080:8080"
+
+  web:
+    build:
+      context: ./web
+      dockerfile: Dockerfile
+    container_name: travel-optimization-web
+    ports:
+      - "3030:3000" # Expose NextJS on 3030 to avoid conflicts
+    environment:
+      - NEXT_PUBLIC_API_URL=http://localhost:8080
+    volumes:
+      - ./web:/app
+      - /app/node_modules
+      - /app/.next

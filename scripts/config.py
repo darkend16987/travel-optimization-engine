@@ -40,6 +40,16 @@ def get_kiwi_key():
     return os.environ.get("KIWI_API_KEY", "")
 
 
+def get_serpapi_key():
+    """Get SerpApi API key from environment. Reads at call time, not import time."""
+    return os.environ.get("SERPAPI_KEY", "")
+
+
+def get_gemini_key():
+    """Get Gemini API key from environment. Reads at call time."""
+    return os.environ.get("GEMINI_API_KEY", "")
+
+
 # --- Base URLs ---
 # Amadeus: switch to production by setting AMADEUS_ENV=production
 def get_amadeus_base_url():
@@ -85,6 +95,8 @@ def validate_keys(*required_keys):
     key_map = {
         "amadeus": (get_amadeus_key(), get_amadeus_secret()),
         "kiwi": (get_kiwi_key(),),
+        "serpapi": (get_serpapi_key(),),
+        "gemini": (get_gemini_key(),),
     }
     for key_name in required_keys:
         values = key_map.get(key_name, ())
@@ -92,7 +104,7 @@ def validate_keys(*required_keys):
             missing.append(key_name.upper())
     if missing:
         print(f"ERROR: Missing API keys for: {', '.join(missing)}", file=sys.stderr)
-        print("Set environment variables: AMADEUS_API_KEY, AMADEUS_API_SECRET, KIWI_API_KEY", file=sys.stderr)
+        print("Set environment variables: AMADEUS_API_KEY, AMADEUS_API_SECRET, KIWI_API_KEY, SERPAPI_KEY", file=sys.stderr)
         sys.exit(1)
 
 

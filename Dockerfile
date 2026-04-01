@@ -26,5 +26,8 @@ ENV AMADEUS_ENV="test"
 HEALTHCHECK --interval=30s --timeout=5s --start-period=5s --retries=3 \
   CMD python -c "import requests; print('OK')" || exit 1
 
-# Default command: show help
-CMD ["python", "scripts/kiwi_tequila.py", "--help"]
+# Expose Backend API port
+EXPOSE 8080
+
+# Default command: start FastAPI backend
+CMD ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "8080"]
